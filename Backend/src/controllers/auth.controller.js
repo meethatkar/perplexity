@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import { sendEmail } from "../services/mail.service.js";
 
 export const register = async (req, res) => {
   try {
@@ -17,6 +18,15 @@ export const register = async (req, res) => {
       verified,
     });
 
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your email",
+      html: `
+        <h1>Verify your email</h1>
+        <p>Click the link to verify your email: http://localhost:3000/verify/${user._id}</p>
+      `,
+    });
+
     res.status(201).json({
       message: "User registered successfully",
       user: { id: user._id, username: user.username, email: user.email },
@@ -30,8 +40,8 @@ export const login = async (req, res, next) => {
   try {
     const { userInfo, password } = req.body;
     // Find user by either email or username using $or
-    const user = await User.findOne({ 
-      $or: [{ email: userInfo }, { username: userInfo }] 
+    const user = await User.findOne({
+      $or: [{ email: userInfo }, { username: userInfo }],
     }).select("+password");
 
     if (!user) {
