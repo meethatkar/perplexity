@@ -1,5 +1,4 @@
 import User from "../models/user.model.js";
-import bcryptjs from "bcryptjs";
 
 export const register = async (req, res) => {
   try {
@@ -11,13 +10,10 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
-
     const user = await User.create({
       username,
       email,
-      password: hashedPassword,
+      password,
       verified,
     });
 
@@ -42,7 +38,7 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcryptjs.compare(password, user.password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
