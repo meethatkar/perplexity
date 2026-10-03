@@ -19,7 +19,7 @@ export const register = async (req, res, next) => {
       verified,
     });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET);
 
     await sendEmail({
       to: user.email,
@@ -68,7 +68,7 @@ export const login = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
@@ -113,4 +113,22 @@ export const verifyEmail = async (req, res, next) => {
 export const logout = (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logout successful" });
+};
+
+export const getMe = async (req, res, next) => {
+  try {
+    const userId = req.decoded.id;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User fetched successfully",
+      user: { id: user._id, username: user.username, email: user.email, verified: user.verified },
+    });
+  } catch (error) {
+    next(error);
+  }
 };

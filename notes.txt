@@ -1,3 +1,7 @@
 1. what is data modelling ?
 --> data ko kis format mai store kar rahe hai and kon kon si collection create kar rahe hai ?
 
+2. read docs: products>landchain>read docs> ts > models > gemini > model class
+
+
+ 

@@ -4,7 +4,9 @@ import {
   login,
   logout,
   verifyEmail,
+  getMe,
 } from "../controllers/auth.controller.js";
+import { verifyUser } from "../middlewares/auth.middleware.js";
 import {
   validateRegister,
   validateLogin,
@@ -40,5 +42,12 @@ router.post("/logout", logout);
  * @query { token }
  */
 router.get("/verify-email", verifyEmail);
+
+/**
+ * @route GET /api/auth/me
+ * @description Get current user
+ * @access Private
+ */
+router.get("/get-me", verifyUser, getMe);
 
 export default router;
